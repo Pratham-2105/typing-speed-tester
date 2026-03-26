@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TypeForge — Typing Speed Test</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Our CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ===== Navbar ===== -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">TypeForge</a>
+        <div class="nav-links">
+            <a href="dashboard.php" id="dashLink">dashboard</a>
+            <a href="login.html"    id="loginLink">login</a>
+        </div>
+    </nav>
+
+    <!-- ===== Main Test Area ===== -->
+    <main class="test-container">
+
+        <!-- Mode & Time Controls -->
+        <div class="controls">
+            <div class="control-group" id="modeGroup">
+                <button class="ctrl-btn active" data-mode="words">words</button>
+                <button class="ctrl-btn"        data-mode="sentence">sentence</button>
+                <button class="ctrl-btn"        data-mode="paragraph">paragraph</button>
+                <button class="ctrl-btn"        data-mode="custom">custom</button>
+            </div>
+            <div class="control-divider"></div>
+            <div class="control-group" id="timeGroup">
+                <button class="ctrl-btn"        data-time="15">15</button>
+                <button class="ctrl-btn"        data-time="30">30</button>
+                <button class="ctrl-btn active" data-time="60">60</button>
+                <button class="ctrl-btn"        data-time="120">120</button>
+            </div>
+        </div>
+
+        <!-- Live Stats Bar (hidden until test starts) -->
+        <div class="stats-bar" id="statsBar">
+            <div class="stat">
+                <span class="stat-label">wpm</span>
+                <span class="stat-value" id="liveWpm">0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value timer-value" id="timeDisplay">60</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">acc</span>
+                <span class="stat-value" id="liveAcc">100%</span>
+            </div>
+        </div>
+
+        <!-- Custom Text Input (visible only in custom mode) -->
+        <div class="custom-box" id="customBox" style="display:none;">
+            <textarea
+                id="customInput"
+                placeholder="Paste or type your custom text here..."
+                rows="4">
+            </textarea>
+            <button class="btn-primary" onclick="applyCustom()">
+                Use This Text
+            </button>
+        </div>
+
+        <!-- Typing Display -->
+        <div class="typing-area" id="typingArea">
+
+            <!-- Characters render here -->
+            <div class="words-display" id="wordsDisplay"></div>
+
+            <!-- Invisible input that captures all keystrokes -->
+            <input
+                type="text"
+                id="hiddenInput"
+                class="hidden-input"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false">
+
+            <p class="cursor-hint" id="cursorHint">
+                click here or press any key to focus
+            </p>
+        </div>
+
+        <!-- Start & Restart Buttons -->
+        <div class="action-row">
+            <button class="btn-start"   onclick="startTest()">Start Test</button>
+            <button class="btn-restart" onclick="resetTest()" title="Restart (Tab)">↺</button>
+        </div>
+
+        <!-- Results Panel (hidden until test ends) -->
+        <div class="results-panel" id="resultsPanel" style="display:none;">
+
+            <div class="result-grid">
+                <div class="result-item">
+                    <span class="result-label">wpm</span>
+                    <span class="result-big" id="finalWpm">0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">accuracy</span>
+                    <span class="result-big" id="finalAcc">0%</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">characters</span>
+                    <span class="result-big" id="finalChars">0/0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">time</span>
+                    <span class="result-big" id="finalTime">0s</span>
+                </div>
+            </div>
+
+            <div class="result-actions">
+                <button class="btn-primary"   onclick="resetTest()">Try Again</button>
+                <a      class="btn-secondary" href="dashboard.php">View Stats</a>
+            </div>
+
+            <p class="save-status" id="saveStatus"></p>
+
+        </div>
+        <!-- /.results-panel -->
+
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Our JS -->
+    <script src="js/script.js"></script>
+
+</body>
+</html>

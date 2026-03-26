@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register — TypeForge</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Our CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-page">
+
+    <div class="auth-card">
+
+        <a href="index.html" class="auth-logo">TypeForge</a>
+        <h2>create account</h2>
+
+        <!-- Success / Error message box -->
+        <div class="msg-box" id="msgBox"></div>
+
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="cooltyper42" maxlength="50">
+            <span class="form-error" id="userErr"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="you@example.com">
+            <span class="form-error" id="emailErr"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="min 6 characters">
+            <span class="form-error" id="passErr"></span>
+        </div>
+
+        <button class="auth-submit" id="submitBtn" onclick="handleRegister()">
+            Create Account
+        </button>
+
+        <div class="auth-footer">
+            Already have an account? <a href="login.html">Login</a>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    'use strict';
+
+    // ===== Client-side Validation =====
+    // Arrow function + destructuring
+    const validateForm = ({ username, email, password }) => {
+        const errors     = {};
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!username)
+            errors.username = 'Username is required';
+        else if (username.length < 3)
+            errors.username = 'Minimum 3 characters';
+        else if (/\s/.test(username))
+            errors.username = 'No spaces allowed in username';
+
+        if (!email)
+            errors.email = 'Email is required';
+        else if (!emailRegex.test(email))
+            errors.email = 'Invalid email format';
+
+        if (!password)
+            errors.password = 'Password is required';
+        else if (password.length < 6)
+            errors.password = 'Minimum 6 characters';
+
+        return errors;
+    };
+
+    // Clear all error messages
+    const clearErrors = () => {
+        ['userErr', 'emailErr', 'passErr'].forEach(id => {
+            document.getElementById(id).textContent = '';
+        });
+        const mb         = document.getElementById('msgBox');
+        mb.style.display = 'none';
+        mb.textContent   = '';
+    };
+
+    // Show top message box
+    const showMsg = (text, type) => {
+        const mb          = document.getElementById('msgBox');
+        mb.className      = `msg-box ${type}`;
+        mb.textContent    = text;
+        mb.style.display  = 'block';
+    };
+
+    // ===== Register Handler — async/await =====
+    const handleRegister = async () => {
+        clearErrors();
+
+        // Collect all fields into one object
+        const fields = {
+            username: document.getElementById('username').value.trim(),
+            email:    document.getElementById('email').value.trim(),
+            password: document.getElementById('password').value
+        };
+
+        // Destructure errors from validation
+        const errors = validateForm(fields);
+
+        if (errors.username) {
+            document.getElementById('userErr').textContent = errors.username;
+            return;
+        }
+        if (errors.email) {
+            document.getElementById('emailErr').textContent = errors.email;
+            return;
+        }
+        if (errors.password) {
+            document.getElementById('passErr').textContent = errors.password;
+            return;
+        }
+
+        // Disable button while waiting
+        const btn       = document.getElementById('submitBtn');
+        btn.textContent = 'Creating account...';
+        btn.disabled    = true;
+
+        // Spread operator to build request body from fields object
+        const body = new URLSearchParams({ ...fields });
+
+        try {
+            const res = await fetch('php/register.php', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body
+            });
+
+            // Destructure response
+            const { success, message } = await res.json();
+
+            if (success) {
+                showMsg(`${message} Redirecting to login...`, 'success');
+                setTimeout(() => window.location.href = 'login.html', 1500);
+            } else {
+                showMsg(message, 'error');
+                btn.textContent = 'Create Account';
+                btn.disabled    = false;
+            }
+
+        } catch (err) {
+            showMsg('Network error. Is XAMPP running?', 'error');
+            btn.textContent = 'Create Account';
+            btn.disabled    = false;
+        }
+    };
+
+    // Enter key triggers register
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Enter') handleRegister();
+    });
+
+    </script>
+
+</body>
+</html>
